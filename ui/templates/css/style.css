@@ -1,0 +1,53 @@
+/* Enter your custom styles here */
+.fgHeaderText {
+	font-size: 1.2rem;
+	line-height: inherit;
+}
+
+.fgLabelText {
+	font-size: 1.2rem;
+}
+
+.sapMShellBrandingBar {
+    height: 0px;
+}
+
+.sapMPageHeader::before {
+    border-top-width: 0rem;
+}
+
+
+.formNoColoumn.sapUiFormLblColon .sapUiFormElementLbl>.sapMLabel:after {
+    content: "";
+}
+
+.formNoColoumn .sapUiFormLblColon .sapUiFormElementLbl>.sapMLabel:after {
+    content: "";
+}
+
+.center {
+  margin: auto;
+  padding-top: 25px;
+}
+.mybackground_listitem.sapMText
+{
+    color:	#1E90FF;
+}
+.sapUiForm:not(.sapUiFormEdit) .sapUiFormCLSmallColumns .sapUiFormCLContainer:not(.sapUiFormContainerTitle):not(.sapUiFormContainerToolbar) {
+    padding-top: 0.25rem;
+    padding-bottom: 0rem;
+}
+.sapUxAPObjectPageLayout-Std-Desktop .sapUxAPBlockContainer {
+    padding: 1rem 2rem 3rem 2rem;
+    padding-bottom: 0rem;
+}
+.word_underline {
+    border-bottom-style: solid !important;
+    border-color: black !important;
+    padding: 1rem !important;
+    height: 3rem
+}
+
+.black{
+color:black;
+}

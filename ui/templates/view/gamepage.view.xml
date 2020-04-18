@@ -1,0 +1,99 @@
+<core:View xmlns:core="sap.ui.core"
+           xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:tnt="sap.tnt" xmlns:f="sap.f"
+           xmlns:form="sap.ui.layout.form"
+           controllerName="hangman.controller.gamepage"
+           displayBlock="true" xmlns:u="sap.ui.unified" xmlns:l="sap.ui.layout" viewName="GamePage"
+           xmlns:html="http://www.w3.org/1999/xhtml">
+    <App id="idInvoiceAppControl">
+        <Page showHeader="false" enableScrolling="true"
+              class="sapMPageHeader" id="Login1">
+            <content>
+                <tnt:ToolHeader>
+                    <Image
+                            src="{{url_for('static', filename='HangmanTitleLogo.png')}}"
+                            class="size1">
+                    </Image>
+                    <ToolbarSpacer/>
+                    <ToolbarSpacer/>
+                    <Button text="New Game" type="Emphasized" press="createNewGame"></Button>
+
+                </tnt:ToolHeader>
+                <l:BlockLayout id="BlockLayout" background="Dashboard">
+                    <l:BlockLayoutRow accentCells="Accent1">
+                        <l:BlockLayoutCell
+                                id="idGuesses"
+                                title="Guesses Left: {/num_guesses_left}">
+                            <f:GridList id="gridList"
+                                        headerText="Wrong Guesses"
+                                        items="{ path: '/wrong_guesses' }">
+                                <f:GridListItem>
+                                    <VBox height="100%">
+                                        <VBox class="sapUiSmallMargin">
+                                            <layoutData>
+                                                <FlexItemData growFactor="1"
+                                                              shrinkFactor="0"/><!-- Don't shrink below minimum size. Fill space if available. -->
+                                            </layoutData>
+                                            <Title text="{}" wrapping="true"/>
+                                        </VBox>
+                                    </VBox>
+                                </f:GridListItem>
+                            </f:GridList>
+
+                        </l:BlockLayoutCell>
+                        <l:BlockLayoutCell width="2" title="Word">
+                            <FlexBox
+                                    id="idWord"
+                                    alignItems="Center"
+                                    justifyContent="Center"
+                                    items="{path: '/word'}">
+                                <items>
+                                    <Title text="{}" class="sapUiSmallMarginEnd word_underline "/>
+                                </items>
+
+
+                            </FlexBox>
+
+                            <VBox class="sapUiSmallMargin">
+                                <form:SimpleForm id="SimpleFormChange354"
+                                                 editable="true"
+                                                 layout="ResponsiveGridLayout"
+                                                 labelSpanXL="3"
+                                                 labelSpanL="3"
+                                                 labelSpanM="3"
+                                                 labelSpanS="12"
+                                                 adjustLabelSpan="false"
+                                                 emptySpanXL="4"
+                                                 emptySpanL="4"
+                                                 emptySpanM="4"
+                                                 emptySpanS="0"
+                                                 columnsXL="1"
+                                                 columnsL="1"
+                                                 columnsM="1"
+                                                 singleContainerFullSize="false">
+                                    <form:content>
+                                        <Label text="Enter Guess"/>
+                                        <Input id="idChar" editable="false" placeholder="Enter Guess ..."
+                                               valueStateText="Cannot be empty or more than 1 character."
+                                               value="{
+														path : '/char',
+														type : 'sap.ui.model.type.String',
+														constraints : {
+															minLength: 1,
+															maxLength: 1
+														}
+													}"/>
+                                        <Button id="idSubmit" text="Submit" enabled="false" press="submitGuess"></Button>
+                                    </form:content>
+                                </form:SimpleForm>
+                            </VBox>
+                        </l:BlockLayoutCell>
+                    </l:BlockLayoutRow>
+                </l:BlockLayout>
+            </content>
+            <footer>
+                <Toolbar>
+                </Toolbar>
+            </footer>
+        </Page>
+    </App>
+</core:View>

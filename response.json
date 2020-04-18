@@ -1,0 +1,16 @@
+// send game id , GET
+
+{
+  game_id: '',
+  guesses: {
+    num_guesses_left: 8,
+    num_total_guesses: 10,
+    num_guesses_used: 2
+  },
+  status: {
+    total_chars: 10,
+    "word": ["", "A", "", "", "", "A", ""],
+    "wrong_guesses": ['B', 'C']
+  },
+  game_over: "false"
+}
