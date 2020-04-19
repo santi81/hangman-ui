@@ -69,7 +69,6 @@ sap.ui.define(
 
 				createNewGame: function (oEvent) {
 					var that = this;
-					alert("Yayy New game")
 					sap.ui.core.BusyIndicator.show();
 					var aData = jQuery.ajax({
                                 type: "POST",
@@ -87,11 +86,9 @@ sap.ui.define(
 
                                 },
                                 error: function(jqXHR, textStatus, errorThrown) {
-                                    var error = JSON.parse(JSON.stringify(jqXHR.responseJSON)).message;
-                                    if(error == 'VALUE_ERROR') {
-                                        sap.ui.core.BusyIndicator.hide();
-                                        MessageToast.show("Error. Please contact technical support!");
-                                    }
+                                      sap.ui.core.BusyIndicator.hide();
+                                      MessageToast.show("Error. Please contact technical support!");
+
                                 }
                             })
 
@@ -133,8 +130,18 @@ sap.ui.define(
                                     that.getView().byId("idChar").setProperty("editable", true)
                                     that.getView().byId("idSubmit").setProperty("enabled", true)
 
-                                    //Set GameID to controller
+                                    //Set GameID to controller and update used_char array
                                     that.game_id = data.game_id
+                                    that.used_char = data.status.wrong_guesses
+                                    that.used_char.push.apply(that.used_char,data.status.word)
+
+                                    if (data.status.game_over === true){
+                                        MessageBox.information("Game is over!", {title: "Game Over"})
+
+                                        //Disable Input field and Button
+                                        that.getView().byId("idChar").setProperty("editable", false)
+                                        that.getView().byId("idSubmit").setProperty("enabled", false)
+                                    }
 
                                 },
                                 error: function(jqXHR, textStatus, errorThrown) {
@@ -155,7 +162,19 @@ sap.ui.define(
 
                     // output result
                     if (bValidationError) {
-                        return MessageBox.alert("Please enter 1 Character");
+                        return MessageBox.error("Please enter 1 Character");
+                    }
+
+                    //Convert to Upper case
+                    guessed_char = guessed_char.toUpperCase();
+
+                    //Check for Used Characters
+                    if (that.used_char.indexOf(guessed_char) != -1){
+                        //Clear guessed char
+                        var idChar= that.byId("idChar");
+                        var oModelCurrentGuess = idChar.getModel();
+                        oModelCurrentGuess.setData({"char": ""})
+                        return MessageBox.error(guessed_char + " is used. Make a new guess");
                     }
 
 					sap.ui.core.BusyIndicator.show();
@@ -188,15 +207,24 @@ sap.ui.define(
                                     var oModelCurrentGuess = idChar.getModel();
                                     oModelCurrentGuess.setData({"char": ""})
 
-                                    sap.ui.core.BusyIndicator.hide();
-                                    if (data.status.game_over === true)
-                                    {
-                                        MessageBox.information("Game is over!", {title: "Game Over"})
+                                    //Update used_char array
+                                    that.used_char = data.status.wrong_guesses
+                                    that.used_char.push.apply(that.used_char,data.status.word)
 
-                                        //Disable Input field and Button
-                                        that.getView().byId("idChar").setProperty("editable", false)
-                                        that.getView().byId("idSubmit").setProperty("enabled", false)
+                                    sap.ui.core.BusyIndicator.hide();
+
+                                    if (data.status.game_over === true){
+                                        if (data.guesses.num_guesses_left > 0) {
+                                            MessageBox.success("You Won the Game!", {title: "Game Won"})
+                                        }
+                                        else{
+                                            MessageBox.error("You Lost the Game. Try Again", {title: "Game Lost"})
+                                        }
+                                    //Disable Input field and Button
+                                    that.getView().byId("idChar").setProperty("editable", false)
+                                    that.getView().byId("idSubmit").setProperty("enabled", false)
                                     }
+
 
                                 },
                                 error: function(jqXHR, textStatus, errorThrown) {
