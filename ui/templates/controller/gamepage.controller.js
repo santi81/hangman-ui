@@ -22,7 +22,7 @@ sap.ui.define(
 				 * it is displayed, to bind event
 				 * handlers and do other one-time
 				 * initialization.
-				 * 
+				 *
 				 * @memberOf sap-ui5-poc.loginpage
 				 */
 				onInit: function () {
@@ -74,8 +74,9 @@ sap.ui.define(
 					var aData = jQuery.ajax({
                                 type: "POST",
                                 contentType: "application/json",
-                                url: '/hangman/new-game',
+                                url: '/api/createGame/',
                                 dataType: "json",
+                                data: JSON.stringify({}),
                                 async: true,
                                 success: function(data, textStatus, jqXHR) {
                                     //redirect to a URL
@@ -102,7 +103,7 @@ sap.ui.define(
 					var aData = jQuery.ajax({
                                 type: "GET",
                                 contentType: "application/json",
-                                url: '/hangman/game-status?game_id='+game_id,
+                                url: '/api/retrieveGame/'+game_id,
                                 dataType: "json",
                                 async: true,
                                 success: function(data, textStatus, jqXHR) {
@@ -110,17 +111,14 @@ sap.ui.define(
                                     var guesses_data, word_data, char_count, list_char
                                     guesses_data = {}
                                     guesses_data["num_guesses_left"] = data.guesses.num_guesses_left
-//                                    guesses_data["wrong_guesses"]=["O", "I","E"]
-                                    guesses_data["wrong_guesses"]=[]
+                                    guesses_data["wrong_guesses"]=data.status.wrong_guesses
                                     oModelGuesses.setData(guesses_data);
                                     sap.ui.core.BusyIndicator.hide();
                                     var idGuesses = that.byId("idGuesses");
                                     idGuesses.setModel(oModelGuesses);
 
                                     //new word
-                                    char_count = data.status.total_chars
-                                    list_char = Array(char_count).join(".").split(".");
-                                    word_data= {"word": list_char}
+                                    word_data= {"word": data.status.word}
                                     var oModelWord = new sap.ui.model.json.JSONModel();
                                     oModelWord.setData(word_data)
                                     var idWord= that.byId("idWord");
@@ -162,11 +160,11 @@ sap.ui.define(
 
 					sap.ui.core.BusyIndicator.show();
 					var aData = jQuery.ajax({
-                                type: "PUT",
+                                type: "POST",
                                 contentType: "application/json",
-                                url: '/hangman/submit-guess?game_id='+that.game_id,
+                                url: '/api/submitGuess/',
                                 dataType: "json",
-                                data:{guessed_char},
+                                data:JSON.stringify({"game_id": that.game_id, "guess": guessed_char}),
                                 async: true,
                                 success: function(data, textStatus, jqXHR) {
                                     var guesses_data, word_data, char_count, list_char
@@ -191,6 +189,14 @@ sap.ui.define(
                                     oModelCurrentGuess.setData({"char": ""})
 
                                     sap.ui.core.BusyIndicator.hide();
+                                    if (data.status.game_over === true)
+                                    {
+                                        MessageBox.information("Game is over!", {title: "Game Over"})
+
+                                        //Disable Input field and Button
+                                        that.getView().byId("idChar").setProperty("editable", false)
+                                        that.getView().byId("idSubmit").setProperty("enabled", false)
+                                    }
 
                                 },
                                 error: function(jqXHR, textStatus, errorThrown) {
