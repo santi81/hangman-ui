@@ -44,10 +44,12 @@
 .word_underline {
     border-bottom-style: solid !important;
     border-color: black !important;
-    padding: 1rem !important;
-    height: 3rem
+    box-shadow: none !important;
 }
 
+.word_center > ul{
+    justify-content: center !important;
+}
 .black{
 color:black;
 }

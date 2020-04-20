@@ -1,5 +1,6 @@
 <core:View xmlns:core="sap.ui.core"
            xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:tnt="sap.tnt" xmlns:f="sap.f"
+           xmlns:grid="sap.ui.layout.cssgrid"
            xmlns:form="sap.ui.layout.form"
            controllerName="hangman.controller.gamepage"
            displayBlock="true" xmlns:u="sap.ui.unified" xmlns:l="sap.ui.layout" viewName="GamePage"
@@ -26,13 +27,39 @@
                             <f:GridList id="gridList"
                                         headerText="Wrong Guesses"
                                         items="{ path: '/wrong_guesses' }">
+                                <f:customLayout>
+                                    <grid:GridResponsiveLayout>
+                                        <grid:layoutS>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 3rem)"
+                                                    gridAutoRows="3rem"
+                                                    gridRowGap="1rem"
+                                                    gridColumnGap="1rem">
+                                            </grid:GridSettings>
+                                        </grid:layoutS>
+                                        <grid:layout>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 3rem)"
+                                                    gridAutoRows="3rem"
+                                                    gridRowGap="1rem"
+                                                    gridColumnGap="1rem">
+                                            </grid:GridSettings>
+                                        </grid:layout>
+                                        <grid:layoutXL>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 3rem)"
+                                                    gridAutoRows="3rem"
+                                                    gridRowGap="1rem"
+                                                    gridColumnGap="1rem">
+                                            </grid:GridSettings>
+                                        </grid:layoutXL>
+                                    </grid:GridResponsiveLayout>
+                                </f:customLayout>
                                 <f:GridListItem>
-                                    <VBox height="100%">
-                                        <VBox class="sapUiSmallMargin">
-                                            <layoutData>
-                                                <FlexItemData growFactor="1"
-                                                              shrinkFactor="0"/><!-- Don't shrink below minimum size. Fill space if available. -->
-                                            </layoutData>
+                                    <VBox height="100%" alignItems="Center"
+                                          justifyContent="Center">
+                                        <VBox class="sapUiSmallMargin" alignItems="Center"
+                                              justifyContent="Center">
                                             <Title text="{}" wrapping="true"/>
                                         </VBox>
                                     </VBox>
@@ -41,17 +68,48 @@
 
                         </l:BlockLayoutCell>
                         <l:BlockLayoutCell width="2" title="Word">
-                            <FlexBox
-                                    id="idWord"
-                                    alignItems="Center"
-                                    justifyContent="Center"
-                                    items="{path: '/word'}">
-                                <items>
-                                    <Title text="{}" class="sapUiSmallMarginEnd word_underline "/>
-                                </items>
+                            <f:GridList id="idWord"
+                                        items="{ path: '/word' }"
+                                        class="word_center">
+                                <f:customLayout>
+                                    <grid:GridResponsiveLayout>
+                                        <grid:layoutS>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 2rem)"
+                                                    gridAutoRows="2rem"
+                                                    gridRowGap="1rem"
+                                                    gridColumnGap="0.5rem">
+                                            </grid:GridSettings>
+                                        </grid:layoutS>
+                                        <grid:layout>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 2rem)"
+                                                    gridAutoRows="2rem"
+                                                    gridRowGap="1rem"
+                                                    gridColumnGap="0.5rem">
+                                            </grid:GridSettings>
+                                        </grid:layout>
+                                        <grid:layoutXL>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 2rem)"
+                                                    gridAutoRows="2rem"
+                                                    gridRowGap="1rem"
+                                                    gridColumnGap="0.5rem">
+                                            </grid:GridSettings>
+                                        </grid:layoutXL>
+                                    </grid:GridResponsiveLayout>
+                                </f:customLayout>
+                                <f:GridListItem class="word_underline">
+                                    <VBox height="100%" alignItems="Center"
+                                          justifyContent="Center">
+                                        <VBox class="sapUiTinyMargin" alignItems="Center"
+                                              justifyContent="Center">
+                                            <Title text="{}" wrapping="true"/>
+                                        </VBox>
+                                    </VBox>
+                                </f:GridListItem>
+                            </f:GridList>
 
-
-                            </FlexBox>
 
                             <VBox class="sapUiSmallMargin">
                                 <form:SimpleForm id="SimpleFormChange354"
@@ -82,7 +140,8 @@
 															maxLength: 1
 														}
 													}"/>
-                                        <Button id="idSubmit" text="Submit" enabled="false" press="submitGuess"></Button>
+                                        <Button id="idSubmit" text="Submit" enabled="false"
+                                                press="submitGuess"></Button>
                                     </form:content>
                                 </form:SimpleForm>
                             </VBox>
