@@ -1,8 +1,10 @@
 # Hangman
 Steps to run:
-- create a conda environment.
-On Terminal
-- pip install -r requirements.txt
-- python app.py
-- Launch browser -> 0.0.0.9009/hangman
-- Click on "New Game"
+- git clone https://github.com/santi81/hangman-ui.git
+- cd hangman-ui
+- docker run -t <image-tag> .
+- docker run -p 9000:9000 <image-tag>
+- http://localhost:9000/hangman
+
+
+![Image description](https://github.com/santi81/hangman-ui/blob/master/hangman-ui.png)
