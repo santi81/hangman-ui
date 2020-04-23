@@ -10,63 +10,20 @@
               class="sapMPageHeader" id="Login1">
             <content>
                 <tnt:ToolHeader>
-                    <Image
-                            src="{{url_for('static', filename='HangmanTitleLogo.png')}}"
-                            class="size1">
-                    </Image>
-                    <ToolbarSpacer/>
+<!--                    <Image-->
+<!--                            src="{{url_for('static', filename='HangmanTitleLogo.png')}}"-->
+<!--                            class="size1">-->
+<!--                    </Image>-->
+                    <Avatar src="{{url_for('static', filename='HangmanSmallLogo.png')}}" displaySize="XS"
+                            imageFitType="Cover" displayShape="Circle"/>
+                    <Title text="Hangman" wrapping="false" />
                     <ToolbarSpacer/>
                     <Button text="New Game" type="Emphasized" press="createNewGame"></Button>
+                    <Button icon="sap-icon://sys-help" type="Transparent" press="handlePopoverPress"/>
 
                 </tnt:ToolHeader>
                 <l:BlockLayout id="BlockLayout" background="Dashboard">
                     <l:BlockLayoutRow accentCells="Accent1">
-                        <l:BlockLayoutCell
-                                id="idGuesses"
-                                title="Guesses Left: {/num_guesses_left}">
-                            <f:GridList id="gridList"
-                                        headerText="Wrong Guesses"
-                                        items="{ path: '/wrong_guesses' }">
-                                <f:customLayout>
-                                    <grid:GridResponsiveLayout>
-                                        <grid:layoutS>
-                                            <grid:GridSettings
-                                                    gridTemplateColumns="repeat(auto-fit, 3rem)"
-                                                    gridAutoRows="3rem"
-                                                    gridRowGap="1rem"
-                                                    gridColumnGap="1rem">
-                                            </grid:GridSettings>
-                                        </grid:layoutS>
-                                        <grid:layout>
-                                            <grid:GridSettings
-                                                    gridTemplateColumns="repeat(auto-fit, 3rem)"
-                                                    gridAutoRows="3rem"
-                                                    gridRowGap="1rem"
-                                                    gridColumnGap="1rem">
-                                            </grid:GridSettings>
-                                        </grid:layout>
-                                        <grid:layoutXL>
-                                            <grid:GridSettings
-                                                    gridTemplateColumns="repeat(auto-fit, 3rem)"
-                                                    gridAutoRows="3rem"
-                                                    gridRowGap="1rem"
-                                                    gridColumnGap="1rem">
-                                            </grid:GridSettings>
-                                        </grid:layoutXL>
-                                    </grid:GridResponsiveLayout>
-                                </f:customLayout>
-                                <f:GridListItem>
-                                    <VBox height="100%" alignItems="Center"
-                                          justifyContent="Center">
-                                        <VBox class="sapUiSmallMargin" alignItems="Center"
-                                              justifyContent="Center">
-                                            <Title text="{}" wrapping="true"/>
-                                        </VBox>
-                                    </VBox>
-                                </f:GridListItem>
-                            </f:GridList>
-
-                        </l:BlockLayoutCell>
                         <l:BlockLayoutCell width="2" title="Word">
                             <f:GridList id="idWord"
                                         items="{ path: '/word' }"
@@ -111,40 +68,50 @@
                             </f:GridList>
 
 
-                            <VBox class="sapUiSmallMargin">
-                                <form:SimpleForm id="SimpleFormChange354"
-                                                 editable="true"
-                                                 layout="ResponsiveGridLayout"
-                                                 labelSpanXL="3"
-                                                 labelSpanL="3"
-                                                 labelSpanM="3"
-                                                 labelSpanS="12"
-                                                 adjustLabelSpan="false"
-                                                 emptySpanXL="4"
-                                                 emptySpanL="4"
-                                                 emptySpanM="4"
-                                                 emptySpanS="0"
-                                                 columnsXL="1"
-                                                 columnsL="1"
-                                                 columnsM="1"
-                                                 singleContainerFullSize="false">
-                                    <form:content>
-                                        <Label text="Enter Guess"/>
-                                        <Input id="idChar" editable="false" placeholder="Enter Guess ..."
-                                               valueStateText="Cannot be empty or more than 1 character."
-                                               value="{
-														path : '/char',
-														type : 'sap.ui.model.type.String',
-														constraints : {
-															minLength: 1,
-															maxLength: 1
-														}
-													}"/>
-                                        <Button id="idSubmit" text="Submit" enabled="false"
-                                                press="submitGuess"></Button>
-                                    </form:content>
-                                </form:SimpleForm>
-                            </VBox>
+                            <f:GridList id="idCharList"
+                                        items="{ path: '/chars' }"
+                                        class="word_center"
+                                        headerText="Guesses Left: {/num_guesses_left}">
+                                <f:customLayout>
+                                    <grid:GridResponsiveLayout>
+                                        <grid:layoutS>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 2.25rem)"
+                                                    gridAutoRows="2rem"
+                                                    gridRowGap="0.5rem"
+                                                    gridColumnGap="0.5rem">
+                                            </grid:GridSettings>
+                                        </grid:layoutS>
+                                        <grid:layout>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 2.5rem)"
+                                                    gridAutoRows="2rem"
+                                                    gridRowGap="0.5rem"
+                                                    gridColumnGap="0.5rem">
+                                            </grid:GridSettings>
+                                        </grid:layout>
+                                        <grid:layoutXL>
+                                            <grid:GridSettings
+                                                    gridTemplateColumns="repeat(auto-fit, 2.5rem)"
+                                                    gridAutoRows="2rem"
+                                                    gridRowGap="0.5rem"
+                                                    gridColumnGap="0.5rem">
+                                            </grid:GridSettings>
+                                        </grid:layoutXL>
+                                    </grid:GridResponsiveLayout>
+                                </f:customLayout>
+                                <f:GridListItem class="char_no_border">
+                                    <VBox height="100%" alignItems="Center"
+                                          justifyContent="Center">
+                                        <VBox class="sapUiTinyMargin sapUiSizeCompact" alignItems="Center"
+                                              justifyContent="Center">
+                                            <ToggleButton text="{}" press="submitGuess"/>
+                                        </VBox>
+                                    </VBox>
+                                </f:GridListItem>
+                            </f:GridList>
+
+
                         </l:BlockLayoutCell>
                     </l:BlockLayoutRow>
                 </l:BlockLayout>

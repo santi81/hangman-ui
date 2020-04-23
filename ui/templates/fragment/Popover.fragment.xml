@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Popover
+            title="Help"
+            class="sapUiResponsivePadding--header sapUiResponsivePadding--footer"
+            placement="Bottom">
+        <Panel width="auto" class="" accessibleRole="Region">
+            <content>
+                <FormattedText htmlText='{/helpText}'/>
+            </content>
+        </Panel>
+    </Popover>
+</core:FragmentDefinition>

@@ -26,19 +26,12 @@ sap.ui.define(
 				 * @memberOf sap-ui5-poc.loginpage
 				 */
 				onInit: function () {
-//					var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-//					oRouter.getRoute("gamepage").attachMatched(this._onRouteMatched, this);
 
 
 				},
 
 				onBeforeRendering: function () {
-//					var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-//					oRouter.getRoute("gamepage").attachMatched(this._onRouteMatched, this);
                     try {
-                         //Enable Input field and Button
-                        this.getView().byId("idChar").setProperty("editable", false)
-                        this.getView().byId("idSubmit").setProperty("enabled", false)
                         var game_id = window.location.href.split("/")[4]
                         if (game_id){
                             this.getGameData(game_id)
@@ -50,22 +43,31 @@ sap.ui.define(
 
 				},
 
-				_validateInput: function(oInput) {
-                    var oBinding = oInput.getBinding("value");
-                    var sValueState = "None";
-                    var bValidationError = false;
+                handlePopoverPress: function (oEvent) {
+                            var oButton = oEvent.getSource();
+                            var oModel = new sap.ui.model.json.JSONModel({
+                                helpText: '<p><strong> To Start a New Game:</strong></p>\n' +
+                                            '<ul>' +
+                                            '<li>Click on "New Game" </li>' +
+                                            '</ul>'
+                                            })
 
-                    try {
-                        oBinding.getType().validateValue(oInput.getValue());
-                    } catch (oException) {
-                        sValueState = "Error";
-                        bValidationError = true;
-                    }
-
-                    oInput.setValueState(sValueState);
-
-                    return bValidationError;
+                            // create popover
+                            if (!this._oPopover) {
+                                Fragment.load({
+                                    name: "hangman.fragment.Popover",
+                                    controller: this
+                                }).then(function(pPopover) {
+                                    this._oPopover = pPopover;
+                                    this.getView().addDependent(this._oPopover);
+                                    this._oPopover.setModel(oModel);
+                                    this._oPopover.openBy(oButton);
+                                }.bind(this));
+                            } else {
+                                this._oPopover.openBy(oButton);
+                            }
                 },
+
 
 				createNewGame: function (oEvent) {
 					var that = this;
@@ -96,6 +98,7 @@ sap.ui.define(
 				},
                 getGameData: function(game_id){
                     var that = this;
+                    var oView = this.getView();
 					sap.ui.core.BusyIndicator.show();
 					var aData = jQuery.ajax({
                                 type: "GET",
@@ -106,13 +109,6 @@ sap.ui.define(
                                 success: function(data, textStatus, jqXHR) {
                                     var oModelGuesses = new sap.ui.model.json.JSONModel();
                                     var guesses_data, word_data, char_count, list_char
-                                    guesses_data = {}
-                                    guesses_data["num_guesses_left"] = data.guesses.num_guesses_left
-                                    guesses_data["wrong_guesses"]=data.status.wrong_guesses
-                                    oModelGuesses.setData(guesses_data);
-                                    sap.ui.core.BusyIndicator.hide();
-                                    var idGuesses = that.byId("idGuesses");
-                                    idGuesses.setModel(oModelGuesses);
 
                                     //new word
                                     word_data= {"word": data.status.word}
@@ -121,26 +117,26 @@ sap.ui.define(
                                     var idWord= that.byId("idWord");
                                     idWord.setModel(oModelWord);
 
-                                    var oModelCurrentGuess = new sap.ui.model.json.JSONModel();
-                                    oModelCurrentGuess.setData({"char": ""})
-                                    var idChar= that.byId("idChar");
-                                    idChar.setModel(oModelCurrentGuess);
+                                    //Characters
+                                    var char_data = { "chars":["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                                                         "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+                                                         "W", "X", "Y", "Z"],
+                                                       "num_guesses_left": data.guesses.num_guesses_left}
 
-                                    //Enable Input field and Button
-                                    that.getView().byId("idChar").setProperty("editable", true)
-                                    that.getView().byId("idSubmit").setProperty("enabled", true)
+                                    var oModelChar = new sap.ui.model.json.JSONModel();
+                                    oModelChar.setData(char_data)
+                                    var idCharList= that.byId("idCharList");
+                                    idCharList.setModel(oModelChar);
 
                                     //Set GameID to controller and update used_char array
                                     that.game_id = data.game_id
                                     that.used_char = data.status.wrong_guesses
                                     that.used_char.push.apply(that.used_char,data.status.word)
+                                    sap.ui.core.BusyIndicator.hide();
 
                                     if (data.status.game_over === true){
-                                        MessageBox.information("Game is over!", {title: "Game Over"})
-
-                                        //Disable Input field and Button
-                                        that.getView().byId("idChar").setProperty("editable", false)
-                                        that.getView().byId("idSubmit").setProperty("enabled", false)
+                                        MessageBox.information("Game over! Click on 'New Game' to start again!", {title: "Game Over"})
+                                        oView.byId("BlockLayout").setBusy(true)
                                     }
 
                                 },
@@ -154,30 +150,10 @@ sap.ui.define(
 				submitGuess: function(oEvent){
 				    var that = this;
 			        var oView = this.getView();
-			        var oInputChar = oView.byId("idChar")
-			        var bValidationError = false;
-                    var guessed_char = oInputChar.getValue()
-                    // check that input are not empty
-                    bValidationError = that._validateInput(oInputChar) || bValidationError;
+			        var oInputChar = oEvent.getSource()
+                    var guessed_char = oInputChar.getText()
 
-                    // output result
-                    if (bValidationError) {
-                        return MessageBox.error("Please enter 1 Character");
-                    }
-
-                    //Convert to Upper case
-                    guessed_char = guessed_char.toUpperCase();
-
-                    //Check for Used Characters
-                    if (that.used_char.indexOf(guessed_char) != -1){
-                        //Clear guessed char
-                        var idChar= that.byId("idChar");
-                        var oModelCurrentGuess = idChar.getModel();
-                        oModelCurrentGuess.setData({"char": ""})
-                        return MessageBox.error(guessed_char + " is used. Make a new guess");
-                    }
-
-					sap.ui.core.BusyIndicator.show();
+                    sap.ui.core.BusyIndicator.show();
 					var aData = jQuery.ajax({
                                 type: "POST",
                                 contentType: "application/json",
@@ -187,25 +163,29 @@ sap.ui.define(
                                 async: true,
                                 success: function(data, textStatus, jqXHR) {
                                     var guesses_data, word_data, char_count, list_char
-                                    guesses_data = {}
-                                    guesses_data["num_guesses_left"] = data.guesses.num_guesses_left
-                                    guesses_data["wrong_guesses"]= data.status.wrong_guesses
-                                    var idGuesses = that.byId("idGuesses");
-                                    var oModelGuesses = idGuesses.getModel();
-                                    oModelGuesses.setData(guesses_data);
-                                    // idGuesses.setModel(oModelGuesses);
 
-                                    //new word
-
+                                    //update word model
                                     word_data= {"word": data.status.word}
                                     var idWord= that.byId("idWord");
                                     var oModelWord = idWord.getModel();
                                     oModelWord.setData(word_data)
 
+                                    //Update num_guesses_left
+                                    var char_data = oView.byId('idCharList').getModel().getData()
+                                    char_data.num_guesses_left = data.guesses.num_guesses_left
+                                    oView.byId('idCharList').getModel().setData(char_data)
 
-                                    var idChar= that.byId("idChar");
-                                    var oModelCurrentGuess = idChar.getModel();
-                                    oModelCurrentGuess.setData({"char": ""})
+                                    //Set State and Type for guessed char button
+                                    oInputChar.setPressed("true");
+                                    oInputChar.setEnabled(false);
+                                    if (data.status.wrong_guesses.indexOf(guessed_char)!= -1){
+                                        oInputChar.setType("Reject");
+                                    }
+                                    else{
+                                        oInputChar.setType("Accept");
+
+                                    }
+
 
                                     //Update used_char array
                                     that.used_char = data.status.wrong_guesses
@@ -220,9 +200,7 @@ sap.ui.define(
                                         else{
                                             MessageBox.error("You Lost the Game. Try Again", {title: "Game Lost"})
                                         }
-                                    //Disable Input field and Button
-                                    that.getView().byId("idChar").setProperty("editable", false)
-                                    that.getView().byId("idSubmit").setProperty("enabled", false)
+                                        oView.byId("BlockLayout").setBusy(true)
                                     }
 
 
@@ -232,7 +210,6 @@ sap.ui.define(
                                     MessageToast.show("Error. Please contact technical support!");
                                 }
                             })
-
 				}
 
 			});
